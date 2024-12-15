@@ -103,6 +103,7 @@ public class Main {
         HotelesConLosSigientesParametros(nombreCiudad, tipoAlojamiento, 1, InicioHospedaje, FinalHospedaje, cantAdultos, cantNinios);
         */
 
+        /*
         //precreada
         LinkedList<String[]> HotelesDisponibles = hotelesConLosSigientesParametros(
                 "Cabo Polonio",
@@ -113,6 +114,17 @@ public class Main {
                 2,
                 2
         );
+        */
+
+        confirmarHabitaciones(
+                "Cabanas El Bosque",
+                new int[]{2, 3, 2024},
+                new int[]{31, 3, 2024},
+                2,
+                2,
+                1
+        );
+
 
     }
 
@@ -131,7 +143,7 @@ public class Main {
             int cantidadPersonas = cantAdultos + cantNinios;
 
             //Comprueba si hay habitaciones disponibles en el hotel de esa ciudad
-            int[] cantidadYprecioHabitacionesDisponibles = buscarAlojamientoDisponible(hotel, cantidadPersonas);
+            int[] cantidadYprecioHabitacionesDisponibles = buscarPrecioCantHabitacionesAlojamientoDisponible(hotel, cantidadPersonas);
             int cantidadHabitacionesDisponibles = cantidadYprecioHabitacionesDisponibles[0];
             int minPrecioHabitacionesDisponibles = cantidadYprecioHabitacionesDisponibles[1];
 
@@ -163,7 +175,7 @@ public class Main {
         return listaHoteles;
     }
 
-    public static int[] buscarAlojamientoDisponible(String[] alojamiento, int cantPersonas) {
+    public static int[] buscarPrecioCantHabitacionesAlojamientoDisponible(String[] alojamiento, int cantPersonas) {
 
         int minPrecioHabitacion = 0;
         int cantidadHabitaciones = 0;
@@ -180,7 +192,8 @@ public class Main {
             //comprueba que la habitacion tiene espacio para la cantidad de personas que lo habitaran
             if (unaRelacionHotelHabitacion[3] < cantPersonas) continue;
 
-            int precioHabitacion = obtenerPrecioHabitacionDeAlojamiento(unaRelacionHotelHabitacion[0]);
+            String[] habitacion = obtenerHabitacionDeAlojamiento(unaRelacionHotelHabitacion[0]);
+            int precioHabitacion = convertirStringAInt(habitacion[4]);
 
             if (minPrecioHabitacion == 0 || precioHabitacion < minPrecioHabitacion)
                 minPrecioHabitacion = precioHabitacion;
@@ -191,13 +204,13 @@ public class Main {
         return new int[]{cantidadHabitaciones, minPrecioHabitacion};
     }
 
-    public static int obtenerPrecioHabitacionDeAlojamiento(int idHabitacion) {
+    public static String[] obtenerHabitacionDeAlojamiento(int idHabitacion) {
         for (String[] unaHabitacion : habitaciones) {
             if (convertirStringAInt(unaHabitacion[0]) == idHabitacion) {
-                return convertirStringAInt(unaHabitacion[4]);
+                return unaHabitacion;
             }
         }
-        return 0;
+        return new String[0];
     }
 
     public static int calcularPrecioHabitacion(int precio, int[] fechaInicial, int[] fechaFinal) {
@@ -217,6 +230,66 @@ public class Main {
 
         return (int) precioFinal;
     }
+
+
+    //--------------------------------------SEGUNDO METODO---------------------------------------------
+
+
+    public static void confirmarHabitaciones(String nombreHotel, int[] diaInicioHospedaje, int[] diaFinalHospedaje, int cantAdultos, int cantNinios, int cantHabitacionesCliente) {
+        String[] alojamiento = buscarAlojamientoPorNombre(nombreHotel);
+        int cantidadPersonas = cantAdultos + cantNinios;
+        LinkedList<String[]> habitacionesDisponibles = buscarHabitacionesDisponible(alojamiento, cantidadPersonas);
+
+        renderizarDatos(
+                habitacionesDisponibles,
+                new String[]{
+                        "id",
+                        "Tipo de habitacion",
+                        "Descripcion",
+                        "Veneficios",
+                        "Precio por tipo de habitacion",
+                }
+        );
+
+        for (String[] unaHabitacion : habitacionesDisponibles) {
+
+            //Comprueba que hay mas habitacinoes disponibles que las requeridas por el cliente
+            if (habitacionesDisponibles.size() < cantHabitacionesCliente) continue;
+
+            System.out.println(
+                    "El precio total de la habitacion es: $ "
+                            + calcularPrecioHabitacion(convertirStringAInt(unaHabitacion[4]), diaInicioHospedaje, diaFinalHospedaje)
+            );
+            System.out.println("------------------------------------------------");
+        }
+    }
+
+    public static LinkedList<String[]> buscarHabitacionesDisponible(String[] alojamiento, int cantPersonas) {
+
+        LinkedList<String[]> habitacionesDisponibles = new LinkedList<>();
+
+        //Busca en todas las relaciones entre el alojamiento y las habitaciones
+        for (int[] unaRelacionHotelHabitacion : relacionHotelHabitacion) {
+
+            //Comprueba que las habitaciones sean del Alojamiento
+            if (unaRelacionHotelHabitacion[1] != convertirStringAInt(alojamiento[0])) continue;
+
+            //comprueba que la habitacion esta disponible
+            if (unaRelacionHotelHabitacion[2] != 1) continue;
+
+            //comprueba que la habitacion tiene espacio para la cantidad de personas que lo habitaran
+            if (unaRelacionHotelHabitacion[3] < cantPersonas) continue;
+
+            String[] habitacion = obtenerHabitacionDeAlojamiento(unaRelacionHotelHabitacion[0]);
+
+            habitacionesDisponibles.add(habitacion);
+        }
+
+        return habitacionesDisponibles;
+    }
+
+
+    //--------------------------------------TERCER METODO----------------------------------------------
 
 
     //--------------------------------------RENDERIZAR FORMULARIOS-------------------------------------
