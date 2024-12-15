@@ -66,19 +66,10 @@ public class Main {
     };
 
     // {idCliente, Nombre, apellido, email, nacionalidad, número de teléfono}
-    public static String[][] cliente = {
-            {"1", "Mariano", "Villa", "a@a.com", "Colombiana", "23423565"},
-    };
+    public static String[] cliente = {"", "", "", "", "", ""};
 
-    // {idReserva, idCliente, precioTotal, idHabitacionComprada}
-    public static String[][] reservacionCliente = {
-            {"1", "1", "1000", "1"},  // Reserva del cliente 1 Mariano
-    };
-
-    // {idHabitacionComprada, idReserva, idHabitacion}
-    public static String[][] habitacionesCompradas = {
-            {"1", "1", "1"},  // Reserva 1 (Cliente 1) compra la habitación 1
-    };
+    // {cliente, precioTotal, HoraLlegada, habitacionCompradaDatos}
+    public static String[][] reservacionCliente = {cliente, {""}, {""}, {""}};
 
 
     //--------------------------------------FUNCION PRINCIPAL-----------------------------------------
@@ -89,9 +80,9 @@ public class Main {
         limpiarConsola();
         System.out.println("inicio de aplicacion");
 
-        /*
         String nombreCiudad = elegirNombreCiudad();
         String tipoAlojamiento = elegirTipoAlojamiento();
+        int cantHabitaciones = ingresarNumero("Ingrese la cantidad de habitaciones: ");
         int cantAdultos = ingresarCantidadPersonas("Adultos");
         int cantNinios = ingresarCantidadPersonas("Ninios");
         System.out.println("Ingrese la fecha de inicio del hospedaje");
@@ -100,11 +91,59 @@ public class Main {
         int[] FinalHospedaje = ingresarFecha();
 
         //Primera funcion
-        HotelesConLosSigientesParametros(nombreCiudad, tipoAlojamiento, 1, InicioHospedaje, FinalHospedaje, cantAdultos, cantNinios);
-        */
+        LinkedList<String[]> HotelesDisponibles = hotelesConLosSigientesParametros(
+                nombreCiudad,
+                tipoAlojamiento,
+                cantHabitaciones,
+                InicioHospedaje,
+                FinalHospedaje,
+                cantAdultos,
+                cantNinios
+        );
 
+        //elegir alojamiento
+        String[] alojamientoSeleccionado = seleccionarAlojamiento(HotelesDisponibles);
+
+        limpiarConsola();
+        System.out.println("Habitaciones disponibles para reservar este hotel");
+
+        //Segunda funcion
+        LinkedList<LinkedList<String>> habitacionesDisponibles = confirmarHabitaciones(
+                alojamientoSeleccionado[1],
+                InicioHospedaje,
+                FinalHospedaje,
+                cantAdultos,
+                cantNinios,
+                cantHabitaciones
+        );
+
+        //elegir habitacion
+        seleccionarHabitacion(habitacionesDisponibles);
+        limpiarConsola();
+        System.out.println("Realizando confirmacion de la reservacion");
+
+        Keyboard.nextLine();
+        String nombre = ingresarTexto("Ingrese su nombre: ");
+        String apellido = ingresarTexto("Ingrese su apellido: ");
+        String email = ingresarTexto("Ingrese su email: ");
+        String nacionalidad = ingresarTexto("Ingrese su nacionalidad: ");
+        String telefono = ingresarTexto("Ingrese su telefono: ");
+        String horaLlegada = ingresarHoraDeLlegada();
+
+        //Tercera funcion
+        reservarHabitacionCliente(
+                nombre,
+                apellido,
+                email,
+                nacionalidad,
+                telefono,
+                horaLlegada
+        );
+
+        renderizarDatos(reservacionCliente);
+
+        //Primer metodo precreado para testeo
         /*
-        //precreada
         LinkedList<String[]> HotelesDisponibles = hotelesConLosSigientesParametros(
                 "Cabo Polonio",
                 "Finca",
@@ -116,7 +155,9 @@ public class Main {
         );
         */
 
-        LinkedList<String[]> habitacionesDisponibles = confirmarHabitaciones(
+        //Segundo metodo precreado para testeo
+        /*
+        LinkedList<LinkedList<String>> habitacionesDisponibles = confirmarHabitaciones(
                 "Cabanas El Bosque",
                 new int[]{2, 3, 2024},
                 new int[]{31, 3, 2024},
@@ -124,8 +165,32 @@ public class Main {
                 2,
                 1
         );
+        */
+
+        //Tercer metodo precreado para testeo
+        /*
+        String[] habitacionElegida = habitaciones[2];
+        int[] fechaI = new int[]{2, 3, 2024};
+        int[] fechaF = new int[]{31, 3, 2024};
 
 
+        reservacionCliente[3] = habitacionElegida;
+        reservacionCliente[1][0] = "" + calcularPrecioHabitacion(
+                convertirStringAInt(habitacionElegida[4]),
+                fechaI,
+                fechaF
+        );
+        reservarHabitacionCliente(
+                "Juan",
+                "Perez",
+                "a@a.com",
+                "Uruguaya",
+                "12345678",
+                "8:30"
+        );
+
+        renderizarDatos(reservacionCliente);
+        */
     }
 
 
@@ -235,10 +300,20 @@ public class Main {
     //--------------------------------------SEGUNDO METODO---------------------------------------------
 
 
-    public static LinkedList<String[]> confirmarHabitaciones(String nombreHotel, int[] diaInicioHospedaje, int[] diaFinalHospedaje, int cantAdultos, int cantNinios, int cantHabitacionesCliente) {
+    public static LinkedList<LinkedList<String>> confirmarHabitaciones(String nombreHotel, int[] diaInicioHospedaje, int[] diaFinalHospedaje, int cantAdultos, int cantNinios, int cantHabitacionesCliente) {
         String[] alojamiento = buscarAlojamientoPorNombre(nombreHotel);
         int cantidadPersonas = cantAdultos + cantNinios;
-        LinkedList<String[]> habitacionesDisponibles = buscarHabitacionesDisponible(alojamiento, cantidadPersonas);
+        LinkedList<LinkedList<String>> habitacionesDisponibles = buscarHabitacionesDisponible(alojamiento, cantidadPersonas);
+
+
+        for (LinkedList<String> unaHabitacion : habitacionesDisponibles) {
+
+            //Comprueba que hay mas habitacinoes disponibles que las requeridas por el cliente
+            if (habitacionesDisponibles.size() < cantHabitacionesCliente) continue;
+
+            unaHabitacion.add("" + calcularPrecioHabitacion(convertirStringAInt(unaHabitacion.get(4)), diaInicioHospedaje, diaFinalHospedaje));
+
+        }
 
         renderizarDatos(
                 habitacionesDisponibles,
@@ -248,27 +323,17 @@ public class Main {
                         "Descripcion",
                         "Veneficios",
                         "Precio por tipo de habitacion",
-                }
+                        "El precio total de la habitacion es: $ "
+                },
+                ""
         );
-
-        for (String[] unaHabitacion : habitacionesDisponibles) {
-
-            //Comprueba que hay mas habitacinoes disponibles que las requeridas por el cliente
-            if (habitacionesDisponibles.size() < cantHabitacionesCliente) continue;
-
-            System.out.println(
-                    "El precio total de la habitacion es: $ "
-                            + calcularPrecioHabitacion(convertirStringAInt(unaHabitacion[4]), diaInicioHospedaje, diaFinalHospedaje)
-            );
-            System.out.println("------------------------------------------------");
-        }
 
         return habitacionesDisponibles;
     }
 
-    public static LinkedList<String[]> buscarHabitacionesDisponible(String[] alojamiento, int cantPersonas) {
+    public static LinkedList<LinkedList<String>> buscarHabitacionesDisponible(String[] alojamiento, int cantPersonas) {
 
-        LinkedList<String[]> habitacionesDisponibles = new LinkedList<>();
+        LinkedList<LinkedList<String>> habitacionesDisponibles = new LinkedList<>();
 
         //Busca en todas las relaciones entre el alojamiento y las habitaciones
         for (int[] unaRelacionHotelHabitacion : relacionHotelHabitacion) {
@@ -284,7 +349,13 @@ public class Main {
 
             String[] habitacion = obtenerHabitacionDeAlojamiento(unaRelacionHotelHabitacion[0]);
 
-            habitacionesDisponibles.add(habitacion);
+            LinkedList<String> convercion = new LinkedList<>();
+
+            for (String att : habitacion) {
+                convercion.add(att);
+            }
+
+            habitacionesDisponibles.add(convercion);
         }
 
         return habitacionesDisponibles;
@@ -292,6 +363,24 @@ public class Main {
 
 
     //--------------------------------------TERCER METODO----------------------------------------------
+
+
+    public static void reservarHabitacionCliente(String nombre, String apellido, String email, String nacionalidad, String telefono, String horaDeLlegada) {
+
+        reservacionCliente[0] = new String[]{nombre, apellido, email, nacionalidad, telefono};
+        reservacionCliente[2] = new String[]{horaDeLlegada};
+
+        for (String[] unaResCli : reservacionCliente) {
+            for (String att : unaResCli) {
+                if (att == "") {
+                    System.out.println("ERROR al realizar la reserva");
+                    return;
+                }
+            }
+        }
+
+        System.out.println("Se ha realizado la reserva con exito");
+    }
 
 
     //--------------------------------------RENDERIZAR FORMULARIOS-------------------------------------
@@ -420,6 +509,68 @@ public class Main {
         return new int[]{dia, mes, anio};
     }
 
+    public static String[] seleccionarAlojamiento(LinkedList<String[]> alojamientosDisponibles) {
+        boolean salir = false;
+        while (!salir) {
+            System.out.println("-----------------------------");
+            int idAlojamiento = ingresarNumero("Ingrese la id del alojamiento a reservar: ");
+            for (int i = 0; i < alojamientosDisponibles.size(); i++) {
+                if (convertirStringAInt(alojamientosDisponibles.get(i)[0]) == idAlojamiento) {
+                    return alojamientosDisponibles.get(i);
+                }
+            }
+            System.out.println("Alojamiento no encontrado");
+        }
+        return new String[0];
+    }
+
+    public static void seleccionarHabitacion(LinkedList<LinkedList<String>> habitaciones) {
+        boolean salir = false;
+        while (!salir) {
+            System.out.println("-----------------------------");
+            int idHabitacion = ingresarNumero("Ingrese la id de la habitacion a reservar: ");
+            for (int i = 0; i < habitaciones.size(); i++) {
+                if (convertirStringAInt(habitaciones.get(i).getFirst()) == idHabitacion) {
+
+                    //transforma LinkedList en String[]
+                    String[] convercion = habitaciones.get(i).toArray(new String[habitaciones.size()]);
+
+                    //Agrega la habitacion reservada a la reserva del cliente
+                    reservacionCliente[3] = convercion;
+                    reservacionCliente[1][0] = convercion[5];
+                    System.out.println("Habitacion seleccionada con exito");
+                    return;
+                }
+            }
+
+            //limpiarConsola();
+            System.out.println("Habitacion no encontrada");
+        }
+
+    }
+
+    public static String ingresarHoraDeLlegada() {
+        boolean salir = false;
+        String horaLlegada = "";
+        while (!salir) {
+            int hora = ingresarNumero("Ingrese la hora (0 a 23): ");
+            if (hora < 0 || hora > 23) {
+                System.out.println("Error con la hora");
+                continue;
+            }
+
+            int minutos = ingresarNumero("Ingrese los minutos (0 a 59): ");
+            if (minutos < 0 || minutos > 59) {
+                System.out.println("Error con los minutos");
+                continue;
+            }
+
+            horaLlegada = hora + ":" + minutos;
+            salir = true;
+        }
+        return horaLlegada;
+    }
+
 
     //--------------------------------------FUNCIONES DE UTILIDAD--------------------------------------
 
@@ -503,6 +654,16 @@ public class Main {
         for (String[] unDato : mostrarDato) {
             for (int i = 0; i < unDato.length; i++) {
                 System.out.println(atributos[i] + ": " + unDato[i]);
+            }
+            System.out.println("------------------------------------------------");
+        }
+    }
+
+    public static void renderizarDatos(LinkedList<LinkedList<String>> mostrarDato, String[] atributos, String a) {
+        System.out.println("------------------------------------------------");
+        for (LinkedList<String> unDato : mostrarDato) {
+            for (int i = 0; i < unDato.size(); i++) {
+                System.out.println(atributos[i] + ": " + unDato.get(i));
             }
             System.out.println("------------------------------------------------");
         }
