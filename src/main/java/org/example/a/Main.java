@@ -116,7 +116,7 @@ public class Main {
         );
         */
 
-        confirmarHabitaciones(
+        LinkedList<String[]> habitacionesDisponibles = confirmarHabitaciones(
                 "Cabanas El Bosque",
                 new int[]{2, 3, 2024},
                 new int[]{31, 3, 2024},
@@ -235,7 +235,7 @@ public class Main {
     //--------------------------------------SEGUNDO METODO---------------------------------------------
 
 
-    public static void confirmarHabitaciones(String nombreHotel, int[] diaInicioHospedaje, int[] diaFinalHospedaje, int cantAdultos, int cantNinios, int cantHabitacionesCliente) {
+    public static LinkedList<String[]> confirmarHabitaciones(String nombreHotel, int[] diaInicioHospedaje, int[] diaFinalHospedaje, int cantAdultos, int cantNinios, int cantHabitacionesCliente) {
         String[] alojamiento = buscarAlojamientoPorNombre(nombreHotel);
         int cantidadPersonas = cantAdultos + cantNinios;
         LinkedList<String[]> habitacionesDisponibles = buscarHabitacionesDisponible(alojamiento, cantidadPersonas);
@@ -262,6 +262,8 @@ public class Main {
             );
             System.out.println("------------------------------------------------");
         }
+
+        return habitacionesDisponibles;
     }
 
     public static LinkedList<String[]> buscarHabitacionesDisponible(String[] alojamiento, int cantPersonas) {
