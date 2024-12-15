@@ -86,15 +86,352 @@ public class Main {
 
     //Metodo inicial
     public static void main(String[] args) {
-
+        limpiarConsola();
         System.out.println("inicio de aplicacion");
+
+        /*
+        String nombreCiudad = elegirNombreCiudad();
+        String tipoAlojamiento = elegirTipoAlojamiento();
+        int cantAdultos = ingresarCantidadPersonas("Adultos");
+        int cantNinios = ingresarCantidadPersonas("Ninios");
+        System.out.println("Ingrese la fecha de inicio del hospedaje");
+        int[] InicioHospedaje = ingresarFecha();
+        System.out.println("Ingrese la fecha final del hospedaje");
+        int[] FinalHospedaje = ingresarFecha();
+
+        //Primera funcion
+        HotelesConLosSigientesParametros(nombreCiudad, tipoAlojamiento, 1, InicioHospedaje, FinalHospedaje, cantAdultos, cantNinios);
+        */
+
+        //precreada
+        LinkedList<String[]> HotelesDisponibles = hotelesConLosSigientesParametros(
+                "Cabo Polonio",
+                "Finca",
+                1,
+                new int[]{2, 3, 2024},
+                new int[]{31, 3, 2024},
+                2,
+                2
+        );
 
     }
 
 
     //---------------------------------------PRIMER METODO---------------------------------------------
 
-    //Por Crear
+
+    public static LinkedList<String[]> hotelesConLosSigientesParametros(String ciudad, String tipoAlojamiento, int cantHabitacionesCliente, int[] diaInicioHospedaje, int[] diaFinalHospedaje, int cantAdultos, int cantNinios) {
+        LinkedList<String[]> listaHoteles = new LinkedList<>();
+
+        for (String[] hotel : alojamientos) {
+            //Comprueba si el hotel es de la ciudad y si tiene el tipo de alojamiento
+            if (!(hotel[2].equals(ciudad) && hotel[3].equals(tipoAlojamiento))) continue;
+
+            //Calcula la cantidad de personas que iran a la habitacion
+            int cantidadPersonas = cantAdultos + cantNinios;
+
+            //Comprueba si hay habitaciones disponibles en el hotel de esa ciudad
+            int[] cantidadYprecioHabitacionesDisponibles = buscarAlojamientoDisponible(hotel, cantidadPersonas);
+            int cantidadHabitacionesDisponibles = cantidadYprecioHabitacionesDisponibles[0];
+            int minPrecioHabitacionesDisponibles = cantidadYprecioHabitacionesDisponibles[1];
+
+            if (cantidadHabitacionesDisponibles < 1) continue;
+
+            //Comprueba que hay mas habitacinoes disponibles que las requeridas por el cliente
+            if (cantidadHabitacionesDisponibles < cantHabitacionesCliente) continue;
+
+            listaHoteles.add(hotel);
+            listaHoteles.add(new String[]{"El precio aproximado del hotel |" + hotel[1] + "| es: $ "
+                    + minPrecioHabitacionesDisponibles + "\nPrecio aproximado por la fecha elegida: $ "
+                    + calcularPrecioHabitacion(minPrecioHabitacionesDisponibles, diaInicioHospedaje, diaFinalHospedaje)
+            });
+        }
+
+
+        renderizarDatos(
+                listaHoteles,
+                new String[]{
+                        "id",
+                        "Nombre Hotel",
+                        "Ciudad",
+                        "Tipo de alojamiento",
+                        "Estrellas",
+                        "Precio"
+                }
+        );
+
+        return listaHoteles;
+    }
+
+    public static int[] buscarAlojamientoDisponible(String[] alojamiento, int cantPersonas) {
+
+        int minPrecioHabitacion = 0;
+        int cantidadHabitaciones = 0;
+
+        //Busca en todas las relaciones entre el alojamiento y las habitaciones
+        for (int[] unaRelacionHotelHabitacion : relacionHotelHabitacion) {
+
+            //Comprueba que las habitaciones sean del Alojamiento
+            if (unaRelacionHotelHabitacion[1] != convertirStringAInt(alojamiento[0])) continue;
+
+            //comprueba que la habitacion esta disponible
+            if (unaRelacionHotelHabitacion[2] != 1) continue;
+
+            //comprueba que la habitacion tiene espacio para la cantidad de personas que lo habitaran
+            if (unaRelacionHotelHabitacion[3] < cantPersonas) continue;
+
+            int precioHabitacion = obtenerPrecioHabitacionDeAlojamiento(unaRelacionHotelHabitacion[0]);
+
+            if (minPrecioHabitacion == 0 || precioHabitacion < minPrecioHabitacion)
+                minPrecioHabitacion = precioHabitacion;
+
+            cantidadHabitaciones++;
+        }
+
+        return new int[]{cantidadHabitaciones, minPrecioHabitacion};
+    }
+
+    public static int obtenerPrecioHabitacionDeAlojamiento(int idHabitacion) {
+        for (String[] unaHabitacion : habitaciones) {
+            if (convertirStringAInt(unaHabitacion[0]) == idHabitacion) {
+                return convertirStringAInt(unaHabitacion[4]);
+            }
+        }
+        return 0;
+    }
+
+    public static int calcularPrecioHabitacion(int precio, int[] fechaInicial, int[] fechaFinal) {
+        double precioFinal = precio;
+
+        if ((fechaInicial[0] <= 10 && fechaFinal[0] >= 5)) {
+            precioFinal = precio - (precio * 0.08);
+        }
+
+        if ((fechaInicial[0] <= 15 && fechaFinal[0] >= 10)) {
+            precioFinal = precio + (precio * 0.10);
+        }
+
+        if ((fechaInicial[0] <= 31 && fechaFinal[0] >= 26)) {
+            precioFinal = precio + (precio * 0.15);
+        }
+
+        return (int) precioFinal;
+    }
+
+
+    //--------------------------------------RENDERIZAR FORMULARIOS-------------------------------------
+
+
+    public static String elegirNombreCiudad() {
+        boolean salir = false;
+        String nombreCiudad = "";
+        while (!salir) {
+            System.out.println("-----------------------------");
+            System.out.println("BIENVENIDO A Booking Hoteles");
+            System.out.println("Realize su reserva de habitaciones");
+            System.out.println("Elija la ciudad de el hotel al que desea viajar");
+            for (int i = 0; i < ciudades.length; i++) {
+                System.out.println(i + 1 + ". ciudad:  " + ciudades[i]);
+            }
+            System.out.println("\n");
+            int num = ingresarNumero("Eliga una opción: ");
+            limpiarConsola();
+
+            if (num > ciudades.length || num < 0) {
+                System.out.println("No es un numero válido");
+                continue;
+            }
+            nombreCiudad = ciudades[num - 1];
+            salir = true;
+        }
+
+        return nombreCiudad;
+    }
+
+    public static String elegirTipoAlojamiento() {
+        boolean salir = false;
+        String tipoAlojamiento = "";
+        while (!salir) {
+            System.out.println("-----------------------------");
+            System.out.println("BIENVENIDO A Booking Hoteles");
+            System.out.println("Elija el tipo de alojamiento que desea");
+            for (int i = 0; i < tiposAlojamientos.length; i++) {
+                System.out.println(i + 1 + ". tipos de alojamientos:  " + tiposAlojamientos[i]);
+            }
+            System.out.println("\n");
+            int num = ingresarNumero("Eliga una opción: ");
+
+            limpiarConsola();
+
+            if (num > tiposAlojamientos.length || num < 0) {
+                System.out.println("No es un numero válido");
+                continue;
+            }
+            tipoAlojamiento = tiposAlojamientos[num - 1];
+            salir = true;
+        }
+
+        return tipoAlojamiento;
+    }
+
+    public static int ingresarCantidadPersonas(String tipoPersona) {
+        System.out.println("-----------------------------");
+
+        int cantPersonas = 0;
+
+        boolean salir = false;
+        while (!salir) {
+            cantPersonas = ingresarNumero("Ingrese la cantidad de " + tipoPersona + ": ");
+
+            if (cantPersonas < 0) {
+                System.out.println("No es un numero válido");
+                continue;
+            }
+
+            salir = true;
+        }
+
+        System.out.println("-----------------------------");
+        System.out.println("cantPersonas: " + cantPersonas);
+
+        limpiarConsola();
+
+        return cantPersonas;
+    }
+
+    public static int[] ingresarFecha() {
+
+        int dia = 0;
+        int mes = 0;
+        int anio = 0;
+
+        boolean salir = false;
+        while (!salir) {
+            System.out.println("-----------------------------");
+            System.out.println("Ingrese una fecha posterior a la actual");
+            System.out.println("-----------------------------");
+
+            dia = ingresarNumero("Ingrese el dia: ");
+            if (dia < 1 || dia > 31) {
+                limpiarConsola();
+                System.out.println("Error ingrese los datos nuevamente");
+                continue;
+            }
+
+            mes = ingresarNumero("Ingrese el mes: ");
+            if (mes < 1 || mes > 12) {
+                System.out.println("Error ingrese los datos nuevamente");
+
+                continue;
+            }
+
+            anio = ingresarNumero("Ingrese el anio: ");
+            if (anio < 2024) {
+                limpiarConsola();
+                System.out.println("Error ingrese los datos nuevamente");
+                continue;
+            }
+
+            salir = true;
+        }
+
+        System.out.println("-----------------------------");
+        System.out.println("Dia: " + dia);
+        System.out.println("Mes: " + mes);
+        System.out.println("Anio: " + anio);
+
+        limpiarConsola();
+
+        return new int[]{dia, mes, anio};
+    }
+
+
+    //--------------------------------------FUNCIONES DE UTILIDAD--------------------------------------
+
+
+    public static String[] buscarAlojamientoPorNombre(String nombreAlojamiento) {
+        for (String[] unAlojamiento : alojamientos) {
+            if (unAlojamiento[1].contains(nombreAlojamiento)) {
+                return unAlojamiento;
+            }
+        }
+        return new String[0];
+    }
+
+    public static int convertirStringAInt(String str) {
+        int numero = 0;
+        int longitud = str.length();
+
+        // Iterar sobre cada carácter del String
+        for (int i = 0; i < longitud; i++) {
+            // Obtener el valor numérico del carácter (por ejemplo, '1' -> 1)
+            char c = str.charAt(i);
+            int valor = c - '0';  // Resta el valor ASCII de '0' para obtener el número
+
+            // Multiplicar el número actual por 10 (para mover los dígitos a la izquierda)
+            // y sumar el valor actual
+            numero = numero * 10 + valor;
+        }
+
+        return numero;
+    }
+
+    public static String ingresarTexto(String msg) {
+        System.out.print(msg);
+        return Keyboard.nextLine();
+    }
+
+    public static int ingresarNumero(String msg) {
+        int numero = 0;
+        System.out.print(msg);
+        while (true) {
+            if (Keyboard.hasNextInt()) {
+                numero = Keyboard.nextInt();
+                break;
+            } else {
+                System.out.println("Error: Debe ingresar un número válido. Intente nuevamente.");
+                Keyboard.next();
+            }
+        }
+        return numero;
+    }
+
+    public static void limpiarConsola() {
+        // Imprime 50 líneas en blanco para simular la limpieza
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
+    }
+
+    public static void renderizarDatos(String[][] mostrarDato) {
+        System.out.println("------------------------------------------------");
+        for (String[] unDato : mostrarDato) {
+            for (String atributo : unDato) {
+                System.out.println(atributo);
+            }
+            System.out.println("------------------------------------------------");
+        }
+    }
+
+    public static void renderizarDatos(LinkedList<String[]> mostrarDato) {
+        System.out.println("------------------------------------------------");
+        for (String[] unDato : mostrarDato) {
+            for (String atributo : unDato) {
+                System.out.println(atributo);
+            }
+            System.out.println("------------------------------------------------");
+        }
+    }
+
+    public static void renderizarDatos(LinkedList<String[]> mostrarDato, String[] atributos) {
+        System.out.println("------------------------------------------------");
+        for (String[] unDato : mostrarDato) {
+            for (int i = 0; i < unDato.length; i++) {
+                System.out.println(atributos[i] + ": " + unDato[i]);
+            }
+            System.out.println("------------------------------------------------");
+        }
+    }
 
 
 }
