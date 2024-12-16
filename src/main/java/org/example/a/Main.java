@@ -1,5 +1,6 @@
 package org.example.a;
 
+import java.security.Key;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -29,12 +30,45 @@ public class Main {
 
     //{idAlojamiento, nombreHotel, ciudad, tipoDeAlojamiento, cantidadDeEstrellas, precio}
     public static String[][] alojamientos = {
+            // Cabo Polonio
             {"1", "Hotel Las Dunas", ciudades[0], tiposAlojamientos[0], "4.3", "150"},
-            {"2", "Cabanas El Bosque", ciudades[0], tiposAlojamientos[1], "3.1", "80"},
-            {"3", "Apartamento Mar del Plata", ciudades[0], tiposAlojamientos[1], "3.5", "70"},
-            {"4", "Cabana Los Pinos", ciudades[1], tiposAlojamientos[0], "4.0", "110"},
-            {"5", "Cabana El Refugio", ciudades[2], tiposAlojamientos[3], "5.1", "120"},
-            {"6", "Posada La Estancia", ciudades[3], tiposAlojamientos[3], "4.0", "90"}
+            {"2", "Cabanas El Bosque", ciudades[0], tiposAlojamientos[0], "3.1", "80"},
+            {"3", "Apartamento Mar del Sol", ciudades[0], tiposAlojamientos[1], "3.5", "70"},
+            {"4", "Apartamento Vista Mar", ciudades[0], tiposAlojamientos[1], "3.7", "75"},
+            {"5", "Cabaña Bosque Azul", ciudades[0], tiposAlojamientos[2], "3.8", "85"},
+            {"6", "Cabaña Refugio del Mar", ciudades[0], tiposAlojamientos[2], "4.0", "90"},
+            {"7", "Hotel Costa Dorada", ciudades[0], tiposAlojamientos[3], "4.1", "95"},
+            {"8", "Hotel La Perla", ciudades[0], tiposAlojamientos[3], "4.2", "120"},
+
+            // La Paloma
+            {"9", "Cabana Los Pinos", ciudades[1], tiposAlojamientos[0], "4.0", "110"},
+            {"10", "Cabanas La Paloma", ciudades[1], tiposAlojamientos[0], "4.5", "130"},
+            {"11", "Apartamento Sol y Mar", ciudades[1], tiposAlojamientos[1], "4.0", "100"},
+            {"12", "Finca La Paloma", ciudades[1], tiposAlojamientos[1], "3.9", "90"},
+            {"13", "Cabana Los Almendros", ciudades[1], tiposAlojamientos[2], "4.1", "115"},
+            {"14", "Cabanas del Mar", ciudades[1], tiposAlojamientos[2], "4.6", "140"},
+            {"15", "Cabana del Lago", ciudades[1], tiposAlojamientos[3], "4.2", "125"},
+            {"16", "Hotel Las Aguas", ciudades[1], tiposAlojamientos[3], "4.3", "130"},
+
+            // Salto
+            {"17", "Cabana El Refugio", ciudades[2], tiposAlojamientos[0], "5.1", "120"},
+            {"18", "Posada Los Sauces", ciudades[2], tiposAlojamientos[0], "4.2", "140"},
+            {"19", "Hotel El Salto", ciudades[2], tiposAlojamientos[1], "3.7", "100"},
+            {"20", "Finca San José", ciudades[2], tiposAlojamientos[1], "4.1", "110"},
+            {"21", "Cabaña El Mirador", ciudades[2], tiposAlojamientos[2], "4.3", "125"},
+            {"22", "Finca Los Olivos", ciudades[2], tiposAlojamientos[2], "4.4", "130"},
+            {"23", "Hotel Los Sauces", ciudades[2], tiposAlojamientos[3], "4.2", "115"},
+            {"24", "Finca El Oasis", ciudades[2], tiposAlojamientos[3], "4.0", "105"},
+
+            // Tacuarembó
+            {"25", "Posada La Estancia", ciudades[3], tiposAlojamientos[0], "4.0", "90"},
+            {"26", "Hotel Tacuarembó", ciudades[3], tiposAlojamientos[0], "3.8", "110"},
+            {"27", "Finca Las Aguas", ciudades[3], tiposAlojamientos[1], "4.2", "105"},
+            {"28", "Apartamento Tacuarembó", ciudades[3], tiposAlojamientos[1], "3.9", "95"},
+            {"29", "Cabaña El Retiro", ciudades[3], tiposAlojamientos[2], "4.3", "120"},
+            {"30", "Apartamento Los Cerrillos", ciudades[3], tiposAlojamientos[2], "4.1", "100"},
+            {"31", "Finca Los Valles", ciudades[3], tiposAlojamientos[3], "4.2", "110"},
+            {"32", "Hotel Río Tacuarembó", ciudades[3], tiposAlojamientos[3], "3.9", "105"}
     };
 
     //{idHabitacion, titulo, descripcion, beneficiosHabitacion, precio}
@@ -56,14 +90,74 @@ public class Main {
                     "Acceso al spa, masaje gratuito", "200"}
     };
 
-    // {idHabitacion, idAlojamiento, disponiblidad, maximaCantidadDePersonas}
+    // {idHabitacion, idAlojamiento, maximaCantidadDePersonas}
     public static int[][] relacionHotelHabitacion = {
-            {1, 1, 0, 5}, // Habitacion 1 en Hotel Las Dunas
-            {2, 2, 1, 10}, // Habitacion 2 en Cabañas El Bosque
-            {3, 3, 1, 30}, // Habitacion 3 en Apartamento Mar del Plata
-            {4, 4, 0, 7}, // Habitacion 4 en Cabaña Los Pinos
-            {5, 5, 1, 4}  // Habitacion 5 en Cabaña El Refugio
+            {1, 1, 5},   // Habitacion 1 en Hotel Las Dunas
+            {2, 1, 10},  // Habitacion 2 en Cabañas El Bosque
+            {3, 2, 30},  // Habitacion 3 en Apartamento Mar del Plata
+            {4, 2, 7},   // Habitacion 4 en Cabaña Los Pinos
+            {1, 3, 19},  // Habitacion 1 en Hotel Sol y Luna
+            {2, 3, 25},  // Habitacion 2 en Hotel Sol y Luna
+            {3, 4, 14},  // Habitacion 3 en Cabañas El Lago
+            {4, 4, 21},  // Habitacion 4 en Cabañas El Lago
+            {1, 5, 22},  // Habitacion 1 en Complejo Los Jardines
+            {2, 5, 6},   // Habitacion 2 en Complejo Los Jardines
+            {3, 6, 12},  // Habitacion 3 en Apartamento Mar de Plata
+            {4, 6, 30},  // Habitacion 4 en Apartamento Mar de Plata
+            {1, 7, 8},   // Habitacion 1 en Hotel El Refugio
+            {2, 7, 18},  // Habitacion 2 en Hotel El Refugio
+            {3, 8, 25},  // Habitacion 3 en Hotel Las Dunas
+            {4, 8, 28},  // Habitacion 4 en Hotel Las Dunas
+            {1, 9, 9},   // Habitacion 1 en Cabañas del Bosque
+            {2, 9, 15},  // Habitacion 2 en Cabañas del Bosque
+            {3, 10, 11}, // Habitacion 3 en Apartamento Los Pinos
+            {4, 10, 20}, // Habitacion 4 en Apartamento Los Pinos
+            {1, 11, 16}, // Habitacion 1 en Hotel El Sol
+            {2, 11, 5},  // Habitacion 2 en Hotel El Sol
+            {3, 12, 23}, // Habitacion 3 en Hotel Cielo Azul
+            {4, 12, 13}, // Habitacion 4 en Hotel Cielo Azul
+            {1, 13, 30}, // Habitacion 1 en Apartamento Mar del Plata
+            {2, 13, 7},  // Habitacion 2 en Apartamento Mar del Plata
+            {3, 14, 20}, // Habitacion 3 en Complejo Los Jardines
+            {4, 14, 9},  // Habitacion 4 en Complejo Los Jardines
+            {1, 15, 28}, // Habitacion 1 en Cabañas El Refugio
+            {2, 15, 10}, // Habitacion 2 en Cabañas El Refugio
+            {3, 16, 18}, // Habitacion 3 en Hotel Las Dunas
+            {4, 16, 12}, // Habitacion 4 en Hotel Las Dunas
+            {1, 17, 16}, // Habitacion 1 en Cabañas El Bosque
+            {2, 17, 4},  // Habitacion 2 en Cabañas El Bosque
+            {3, 18, 22}, // Habitacion 3 en Hotel Sol y Luna
+            {4, 18, 31}, // Habitacion 4 en Hotel Sol y Luna
+            {1, 19, 19}, // Habitacion 1 en Apartamento Los Pinos
+            {2, 19, 17}, // Habitacion 2 en Apartamento Los Pinos
+            {3, 20, 14}, // Habitacion 3 en Cabañas El Lago
+            {4, 20, 27}, // Habitacion 4 en Cabañas El Lago
+            {1, 21, 30}, // Habitacion 1 en Complejo Los Jardines
+            {2, 21, 25}, // Habitacion 2 en Complejo Los Jardines
+            {3, 22, 11}, // Habitacion 3 en Hotel El Refugio
+            {4, 22, 32}, // Habitacion 4 en Hotel El Refugio
+            {1, 23, 5},  // Habitacion 1 en Hotel Cielo Azul
+            {2, 23, 21}, // Habitacion 2 en Hotel Cielo Azul
+            {3, 24, 12}, // Habitacion 3 en Apartamento Mar del Plata
+            {4, 24, 8},  // Habitacion 4 en Apartamento Mar del Plata
+            {1, 25, 13}, // Habitacion 1 en Cabañas del Bosque
+            {2, 25, 19}, // Habitacion 2 en Cabañas del Bosque
+            {3, 26, 9},  // Habitacion 3 en Hotel Las Dunas
+            {4, 26, 15}, // Habitacion 4 en Hotel Las Dunas
+            {1, 27, 24}, // Habitacion 1 en Hotel Sol y Luna
+            {2, 27, 8},  // Habitacion 2 en Hotel Sol y Luna
+            {3, 28, 14}, // Habitacion 3 en Complejo Los Jardines
+            {4, 28, 16}, // Habitacion 4 en Complejo Los Jardines
+            {1, 29, 22}, // Habitacion 1 en Cabañas El Refugio
+            {2, 29, 12}, // Habitacion 2 en Cabañas El Refugio
+            {3, 30, 29}, // Habitacion 3 en Apartamento Los Pinos
+            {4, 30, 17}, // Habitacion 4 en Apartamento Los Pinos
+            {1, 31, 18}, // Habitacion 1 en Hotel Las Dunas
+            {2, 31, 26}, // Habitacion 2 en Hotel Las Dunas
+            {3, 32, 6},  // Habitacion 3 en Cabañas El Lago
+            {4, 32, 13}  // Habitacion 4 en Cabañas El Lago
     };
+
 
     // {idCliente, Nombre, apellido, email, nacionalidad, número de teléfono}
     public static String[] cliente = {"", "", "", "", "", ""};
@@ -80,45 +174,8 @@ public class Main {
         limpiarConsola();
         System.out.println("inicio de aplicacion");
 
-        String nombreCiudad = elegirNombreCiudad();
-        String tipoAlojamiento = elegirTipoAlojamiento();
-        int cantHabitaciones = ingresarNumero("Ingrese la cantidad de habitaciones: ");
-        int cantAdultos = ingresarCantidadPersonas("Adultos");
-        int cantNinios = ingresarCantidadPersonas("Ninios");
-        System.out.println("Ingrese la fecha de inicio del hospedaje");
-        int[] InicioHospedaje = ingresarFecha();
-        System.out.println("Ingrese la fecha final del hospedaje");
-        int[] FinalHospedaje = ingresarFecha();
+        LinkedList<LinkedList<String>> habitacionesDisponibles = seleccionarAlojamiento();
 
-        //Primera funcion
-        LinkedList<String[]> HotelesDisponibles = hotelesConLosSigientesParametros(
-                nombreCiudad,
-                tipoAlojamiento,
-                cantHabitaciones,
-                InicioHospedaje,
-                FinalHospedaje,
-                cantAdultos,
-                cantNinios
-        );
-
-        //elegir alojamiento
-        String[] alojamientoSeleccionado = seleccionarAlojamiento(HotelesDisponibles);
-
-        limpiarConsola();
-        System.out.println("Habitaciones disponibles para reservar este hotel");
-
-        //Segunda funcion
-        LinkedList<LinkedList<String>> habitacionesDisponibles = confirmarHabitaciones(
-                alojamientoSeleccionado[1],
-                InicioHospedaje,
-                FinalHospedaje,
-                cantAdultos,
-                cantNinios,
-                cantHabitaciones
-        );
-
-        //elegir habitacion
-        seleccionarHabitacion(habitacionesDisponibles);
         limpiarConsola();
         System.out.println("Realizando confirmacion de la reservacion");
 
@@ -127,8 +184,12 @@ public class Main {
         String apellido = ingresarTexto("Ingrese su apellido: ");
         String email = ingresarTexto("Ingrese su email: ");
         String nacionalidad = ingresarTexto("Ingrese su nacionalidad: ");
+        System.out.println("Ingrese fecha de naciemiento: ");
+        int[] fechaNacimiento = ingresarNacimientoFecha();
+        Keyboard.nextLine();
         String telefono = ingresarTexto("Ingrese su telefono: ");
         String horaLlegada = ingresarHoraDeLlegada();
+
 
         //Tercera funcion
         reservarHabitacionCliente(
@@ -139,8 +200,15 @@ public class Main {
                 telefono,
                 horaLlegada
         );
-
+        System.out.println("\n");
         renderizarDatos(reservacionCliente);
+
+        System.out.println("\n \n");
+        actulizacionReserva(fechaNacimiento, email, habitacionesDisponibles);
+
+        limpiarConsola();
+        System.out.println("Muchas gracias por agendar su estadia en nuesto sistema \n");
+
 
         //Primer metodo precreado para testeo
         /*
@@ -191,6 +259,55 @@ public class Main {
 
         renderizarDatos(reservacionCliente);
         */
+
+        //Cuarto metodo precreado para testeo
+
+
+    }
+
+    public static LinkedList<LinkedList<String>> seleccionarAlojamiento() {
+
+        String nombreCiudad = elegirNombreCiudad();
+        String tipoAlojamiento = elegirTipoAlojamiento();
+        int cantHabitaciones = ingresarNumero("Ingrese la cantidad de habitaciones: ");
+        int cantAdultos = ingresarCantidadPersonas("Adultos");
+        int cantNinios = ingresarCantidadPersonas("Ninios");
+        System.out.println("Ingrese la fecha de inicio del hospedaje");
+        int[] InicioHospedaje = ingresarFecha();
+        System.out.println("Ingrese la fecha final del hospedaje");
+        int[] FinalHospedaje = ingresarFecha();
+
+        //Primera funcion
+        LinkedList<String[]> HotelesDisponibles = hotelesConLosSigientesParametros(
+                nombreCiudad,
+                tipoAlojamiento,
+                cantHabitaciones,
+                InicioHospedaje,
+                FinalHospedaje,
+                cantAdultos,
+                cantNinios
+        );
+
+        //elegir alojamiento
+        String[] alojamientoSeleccionado = seleccionarAlojamiento(HotelesDisponibles);
+
+        limpiarConsola();
+        System.out.println("Habitaciones disponibles para reservar este hotel");
+
+        //Segunda funcion
+        LinkedList<LinkedList<String>> habitacionesDisponibles = confirmarHabitaciones(
+                alojamientoSeleccionado[1],
+                InicioHospedaje,
+                FinalHospedaje,
+                cantAdultos,
+                cantNinios,
+                cantHabitaciones
+        );
+
+        //elegir habitacion
+        seleccionarHabitacion(habitacionesDisponibles);
+
+        return habitacionesDisponibles;
     }
 
 
@@ -219,7 +336,7 @@ public class Main {
 
             listaHoteles.add(hotel);
             listaHoteles.add(new String[]{"El precio aproximado del hotel |" + hotel[1] + "| es: $ "
-                    + minPrecioHabitacionesDisponibles + "\nPrecio aproximado por la fecha elegida: $ "
+                    + minPrecioHabitacionesDisponibles + "\nPrecio aproximado por la fecha y la cantidad de salas elegidas: $ "
                     + calcularPrecioHabitacion(minPrecioHabitacionesDisponibles, diaInicioHospedaje, diaFinalHospedaje)
             });
         }
@@ -251,11 +368,8 @@ public class Main {
             //Comprueba que las habitaciones sean del Alojamiento
             if (unaRelacionHotelHabitacion[1] != convertirStringAInt(alojamiento[0])) continue;
 
-            //comprueba que la habitacion esta disponible
-            if (unaRelacionHotelHabitacion[2] != 1) continue;
-
             //comprueba que la habitacion tiene espacio para la cantidad de personas que lo habitaran
-            if (unaRelacionHotelHabitacion[3] < cantPersonas) continue;
+            if (unaRelacionHotelHabitacion[2] < cantPersonas) continue;
 
             String[] habitacion = obtenerHabitacionDeAlojamiento(unaRelacionHotelHabitacion[0]);
             int precioHabitacion = convertirStringAInt(habitacion[4]);
@@ -341,11 +455,8 @@ public class Main {
             //Comprueba que las habitaciones sean del Alojamiento
             if (unaRelacionHotelHabitacion[1] != convertirStringAInt(alojamiento[0])) continue;
 
-            //comprueba que la habitacion esta disponible
-            if (unaRelacionHotelHabitacion[2] != 1) continue;
-
             //comprueba que la habitacion tiene espacio para la cantidad de personas que lo habitaran
-            if (unaRelacionHotelHabitacion[3] < cantPersonas) continue;
+            if (unaRelacionHotelHabitacion[2] < cantPersonas) continue;
 
             String[] habitacion = obtenerHabitacionDeAlojamiento(unaRelacionHotelHabitacion[0]);
 
@@ -380,6 +491,91 @@ public class Main {
         }
 
         System.out.println("Se ha realizado la reserva con exito");
+    }
+
+
+    //--------------------------------------CUARTO METODO----------------------------------------------
+
+
+    public static void actulizacionReserva(int[] fechaNacimiento, String emailUsuario, LinkedList<LinkedList<String>> habitacionesDisponibles) {
+        boolean salir = false;
+        while (!salir) {
+
+            Keyboard.nextLine();
+            String cambiar = ingresarTexto("Deceas cambiar tu reserva? (Y/N): ");
+
+            if (!cambiar.equalsIgnoreCase("y")) return;
+
+            System.out.println("------------------------------------------------");
+            System.out.println("Para confirmar su identidad necesitamos algunos datos");
+
+            System.out.println("ingrese su fecha de nacimiento: ");
+            int[] fechaIngresada = ingresarNacimientoFecha();
+            if (!compararArrays(fechaIngresada, fechaNacimiento)) {
+                limpiarConsola();
+                System.out.println("ERROR con los datos ingresados");
+                continue;
+            }
+
+            Keyboard.nextLine();
+            String emailIngresado = ingresarTexto("ingrese su email: ");
+            if (!emailIngresado.equalsIgnoreCase(emailUsuario)) {
+                limpiarConsola();
+                System.out.println("ERROR con los datos ingresados");
+                continue;
+            }
+            System.out.println("Logramos comprobar su identidad");
+            boolean salirBucle = false;
+            while (!salirBucle) {
+                System.out.println("------------------------------------------------");
+                System.out.println("Que desea cambiar: ");
+                System.out.println("0. Salir");
+                System.out.println("1. Cambiar Habitacion");
+                System.out.println("2. Cambiar Alojamiento");
+                int num = ingresarNumero("");
+                switch (num) {
+                    case 0 -> salirBucle = true;
+                    case 1 -> actualizarHabitacion(habitacionesDisponibles);
+                    case 2 -> seleccionarAlojamiento();
+                }
+            }
+        }
+    }
+
+    public static void actualizarHabitacion(LinkedList<LinkedList<String>> habitacionesDisponibles) {
+
+        LinkedList<LinkedList<String>> newHabitacionesDisponibles = new LinkedList<>();
+
+        // Crear una copia profunda
+        for (LinkedList<String> habitacion : habitacionesDisponibles) {
+            LinkedList<String> nuevaHabitacion = new LinkedList<>(habitacion);
+            newHabitacionesDisponibles.add(nuevaHabitacion);
+        }
+
+        for (LinkedList<String> habitacion : newHabitacionesDisponibles) {
+            if (habitacion.get(0).equals(reservacionCliente[3][0])) {
+                newHabitacionesDisponibles.remove(habitacion);
+            }
+        }
+        renderizarDatos(
+                newHabitacionesDisponibles,
+                new String[]{
+                        "id",
+                        "Tipo de habitacion",
+                        "Descripcion",
+                        "Veneficios",
+                        "Precio por tipo de habitacion",
+                        "El precio total de la habitacion es: $ "
+                },
+                ""
+        );
+        if (newHabitacionesDisponibles.isEmpty()) {
+            System.out.println("No hay mas habitaciones disponibles");
+            return;
+        }
+        seleccionarHabitacion(newHabitacionesDisponibles);
+
+        limpiarConsola();
     }
 
 
@@ -463,6 +659,49 @@ public class Main {
         return cantPersonas;
     }
 
+    public static int[] ingresarNacimientoFecha() {
+
+        int dia = 0;
+        int mes = 0;
+        int anio = 0;
+
+        boolean salir = false;
+        while (!salir) {
+
+            dia = ingresarNumero("Ingrese el dia: ");
+            if (dia < 1 || dia > 31) {
+                limpiarConsola();
+                System.out.println("Error ingrese los datos nuevamente");
+                continue;
+            }
+
+            mes = ingresarNumero("Ingrese el mes: ");
+            if (mes < 1 || mes > 12) {
+                System.out.println("Error ingrese los datos nuevamente");
+
+                continue;
+            }
+
+            anio = ingresarNumero("Ingrese el anio: ");
+            if (anio > 2006) {
+                limpiarConsola();
+                System.out.println("Error necesita ser mayor de edad");
+                continue;
+            }
+
+            salir = true;
+        }
+
+        System.out.println("-----------------------------");
+        System.out.println("Dia: " + dia);
+        System.out.println("Mes: " + mes);
+        System.out.println("Anio: " + anio);
+
+        limpiarConsola();
+
+        return new int[]{dia, mes, anio};
+    }
+
     public static int[] ingresarFecha() {
 
         int dia = 0;
@@ -471,9 +710,6 @@ public class Main {
 
         boolean salir = false;
         while (!salir) {
-            System.out.println("-----------------------------");
-            System.out.println("Ingrese una fecha posterior a la actual");
-            System.out.println("-----------------------------");
 
             dia = ingresarNumero("Ingrese el dia: ");
             if (dia < 1 || dia > 31) {
@@ -667,6 +903,27 @@ public class Main {
             }
             System.out.println("------------------------------------------------");
         }
+    }
+
+    public static boolean compararArrays(int[] array1, int[] array2) {
+        // Verificar si ambos arreglos son nulos
+        if (array1 == null || array2 == null) {
+            return false; // Si alguno es nulo, no son iguales
+        }
+
+        // Verificar si tienen la misma longitud
+        if (array1.length != array2.length) {
+            return false; // Si no tienen la misma longitud, no son iguales
+        }
+
+        // Comparar los elementos de los dos arreglos
+        for (int i = 0; i < array1.length; i++) {
+            if (array1[i] != array2[i]) {
+                return false; // Si algún elemento es diferente, los arreglos no son iguales
+            }
+        }
+
+        return true; // Si todos los elementos son iguales, los arreglos son iguales
     }
 
 
